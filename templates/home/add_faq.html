@@ -1,0 +1,46 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Add FAQ{% endblock %}
+
+{% block stylesheets %}
+<!-- Include any additional CSS files for styling -->
+{% endblock stylesheets %}
+
+{% block content %}
+<div class="content">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Ajouter FAQ</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{% url 'add_faq'%}" method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="question">Question</label>
+                                    <input type="text" name="question" id="question" class="form-control" placeholder="Enter question">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="answer">Réponse</label>
+                                    <input type="text" name="answer" id="answer" class="form-control" placeholder="Enter answer">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer</button>
+                        <a href="{% url 'faqs' %}" class="btn btn-secondary">Annuler</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+{% block javascripts %}
+<!-- Include any additional JavaScript files if needed -->
+{% endblock javascripts %}

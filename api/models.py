@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password
-from django_cryptography.fields import encrypt
+
+
 
 # Create your models here.
 class Agent(models.Model):
@@ -21,7 +22,7 @@ class Agent(models.Model):
 class Agence(models.Model):
     nom = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    contact = models.IntegerField(max_length=10)
+    contact = models.IntegerField()
     adresse = models.CharField(max_length=100)
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -33,19 +34,14 @@ class Agence(models.Model):
 class Client(models.Model):
     nom = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    contact = models.IntegerField(max_length=10)
+    contact = models.CharField(max_length=14, unique=True)
     adresse = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     date_naissance = models.DateField()
     code_secret = models.CharField(max_length=100)
     date_creation = models.DateTimeField(auto_now_add=True)
-    key = models.CharField(max_length=100, unique=True, blank=True)
     agence = models.ForeignKey('Agence', on_delete=models.CASCADE)
     
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.code_secret = make_password(self.password)
-        super().save(*args, **kwargs)
     def __str__(self):
         return f"{self.nom}"
     
@@ -57,50 +53,37 @@ class Compte(models.Model):
     date_creation = models.DateTimeField(auto_now_add=True)
     client = models.ForeignKey('Client', on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
+    
 
     def __str__(self):
-        return f"{self.numero}"
+        return f"{self.IBAN}"
     
 class Carte_credit(models.Model):
     type = models.CharField(max_length=100)
     numero = models.CharField(max_length=100)
-    date_expiration = models.DateField()
-    cvv = models.IntegerField(max_length=3)
+    date_expiration = models.CharField(max_length=8)
+    cvv = models.IntegerField()
     date_creation = models.DateTimeField(auto_now_add=True)
     compte = models.ForeignKey('Compte', on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.cvv = encrypt(self.cvv)
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.numero}"
 
 class Chequier(models.Model):
-    num_page = models.IntegerField(max_length=3)
+    num_page = models.IntegerField()
     date_expiration = models.DateField()
     date_creation = models.DateTimeField(auto_now_add=True)
     compte = models.ForeignKey('Compte', on_delete=models.CASCADE)
     
 
     def __str__(self):
-        return f"{self.numero}"
-    
-class Transcation(models.Model):
-    type = models.CharField(max_length=100)
-    montant = models.FloatField()
-    date = models.DateTimeField(auto_now_add=True)
-    compte = models.ForeignKey('Compte', on_delete=models.CASCADE)
+        return f"{self.num_page}"
     
 
-    def __str__(self):
-        return f"{self.type}"
-    
 class Beneficiaire(models.Model):
     nom = models.CharField(max_length=100)
-    contact = models.IntegerField(max_length=10)
+    contact = models.CharField(max_length=14, unique=True)
     client = models.ForeignKey('Client', on_delete=models.CASCADE)
 
     def __str__(self):
@@ -109,51 +92,32 @@ class Beneficiaire(models.Model):
 class Virement(models.Model):
     montant = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
-    compte = models.ForeignKey('Compte', on_delete=models.CASCADE)
-    beneficiaire = models.ForeignKey('Beneficiaire', on_delete=models.CASCADE)
+    client = models.ForeignKey('Client', on_delete=models.CASCADE)
+    compte_beneficiaire = models.ForeignKey('Compte',on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.montant}"
+        return f"{self.date}"
 
-class Rechargement(models.Model):
+class Operations(models.Model):
+    type = models.IntegerField(choices=((0, 'Retrait'), (1, 'Dépôt')))
     montant = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
     compte = models.ForeignKey('Compte', on_delete=models.CASCADE)
     operateur = models.CharField(max_length=30)
 
     def __str__(self):
-        return f"{self.montant}"
+        return f"{self.date}"
     
 class Payement(models.Model):
     montant = models.FloatField()
     date = models.DateTimeField(auto_now_add=True)
-    type = models.CharField(max_length=100)
-    num_facture = models.IntegerField(max_length=10)
+    type = models.CharField(max_length=10)
+    num_facture = models.IntegerField()
     compte = models.ForeignKey('Compte', on_delete=models.CASCADE)
     
-    
-
     def __str__(self):
-        return f"{self.montant}"
+        return f"{self.date}"
     
-class Retrait(models.Model):
-    montant = models.FloatField()
-    date = models.DateTimeField(auto_now_add=True)
-    operateur = models.CharField(max_length=30)
-    compte = models.ForeignKey('Compte', on_delete=models.CASCADE)
-
-
-    def __str__(self):
-        return f"{self.montant}"
-    
-class Demandes(models.Model):
-    type = models.CharField(max_length=100)
-    date = models.DateTimeField(auto_now_add=True)
-    is_active = models.BooleanField(default=True)
-    client = models.ForeignKey('Client', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.type}"
 
 class Demandes_cartes(models.Model):
 
@@ -197,9 +161,13 @@ class Demandes_ouvertures_comptes(models.Model):
     status = models.CharField(max_length=100, choices=STATUT_CHOICES, default='en_attente')
     nom = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
-    contact = models.IntegerField(max_length=10, unique=True)
+    contact = models.CharField(max_length=14, unique=True)
+    date_naissance = models.DateField(blank=True)
     document_pic = models.ImageField(upload_to='passport_pic')
-    photo = models.ImageField(upload_to='photo')
+    photo = models.ImageField(upload_to='photo', blank=True)
+    signature_pic = models.ImageField(upload_to='signature', blank=True)
+    adresse = models.CharField(max_length=100, blank=True)
+    code_secret = models.CharField(max_length=100, blank=True)
 
     def __str__(self):
         return str(self.nom)
@@ -211,3 +179,30 @@ class phoneModel(models.Model):
     
     def __str__(self):
         return str(self.Mobile)
+    
+class FAQ(models.Model):
+    question = models.CharField(max_length=255)
+    answer = models.TextField()
+
+    def __str__(self):
+        return self.question
+    
+
+class Conversation(models.Model):
+    admin = models.ForeignKey(Agent, on_delete=models.CASCADE)
+    user = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='conversations')
+
+class Message(models.Model):
+    conversation = models.ForeignKey(Conversation, on_delete=models.CASCADE, related_name='messages')
+    type = models.IntegerField(choices=((0, 'Client'), (1, 'Agent')))    
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['timestamp']
+
+class FCM_Token(models.Model):
+    user = models.ForeignKey(Client, on_delete=models.CASCADE)
+    token = models.CharField(max_length=255)
+
+    

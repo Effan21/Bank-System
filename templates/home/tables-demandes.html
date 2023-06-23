@@ -1,0 +1,109 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Comptes bancaires{% endblock %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Demandes de cartes de crédits</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table tablesorter">
+                <thead class="text-primary">
+                  <tr>
+                    <th>Client</th>
+                    <th>Type</th>
+                    <th>Statut</th>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for demandes in Demandes_cartes_list %}
+                  <tr>
+                    <td>{{ demandes.client }}</td>
+                    <td>{{ demandes.type }}</td>
+                    <td>
+                    {% if demandes.status == 'Approuvée' %}
+                    <p><i class="fas fa-check-circle text-success"></i> Acceptée</p>
+                    {% elif demandes.status == 'Rejetée' %}
+                    <p><i class="fas fa-times-circle text-danger"></i> Refusée</p>
+                    {% else %}
+                    <p><i class="fas fa-info-circle text-info"></i> En attente</p>
+                    {% endif %} 
+                    </td>
+                    <td class="text-center">{{ demandes.date }}</td>
+                    {% if demandes.status == "en_attente" %} 
+                    <td class="text-center">
+                      <a href="{% url 'accept_demande_carte' demandes.pk  %}" class="btn btn-success btn-sm">Approuvée</a>
+                      <a href="{% url 'reject_demande_carte' demandes.pk  %}" class="btn btn-danger btn-sm">Rejetée</a>
+                    </td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-12">
+        <div class="card card-plain">
+          <div class="card-header">
+            <h4 class="card-title">Demandes de chéquiers</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table tablesorter">
+                <thead class="text-primary">
+                  <tr>
+                    <th>Client</th>
+                    <th>Type</th>
+                    <th>Statut</th>
+                    <th class="text-center">Date</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for demande in Demandes_chequiers_list %}
+                  <tr>
+                    <td>{{ demande.client }}</td>
+                    <td>{{ demande.type }}</td>
+                    <td>
+                      {% if demande.status == 'Approuvée' %}
+                      <p><i class="fas fa-check-circle text-success"></i> Acceptée</p>
+                      {% elif demande.status == 'Rejetée' %}
+                      <p><i class="fas fa-times-circle text-danger"></i> Refusée</p>
+                      {% else %}
+                      <p><i class="fas fa-info-circle text-info"></i> En attente</p>
+                      {% endif %} 
+                      </td>
+                    
+                    <td class="text-center">{{ demande.date }}</td>
+
+                    {% if demande.status == 'en_attente' %}  
+                    <td class="text-center">                   
+                      <a href="{% url 'accept_demande_chequier' demande.pk  %}" class="btn btn-success btn-sm">Approuvée</a>
+                      <a href="{% url 'reject_demande_chequier' demande.pk  %}" class="btn btn-danger btn-sm">Rejetée</a>
+                    </td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

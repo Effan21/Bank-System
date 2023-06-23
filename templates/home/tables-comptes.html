@@ -1,0 +1,105 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Comptes bancaires{% endblock %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Comptes Bancaires</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table tablesorter">
+                <thead class="text-primary">
+                  <tr>
+                    <th>Nom</th>
+                    <th>IBAN</th>
+                    <th>Solde</th>
+                    <th>Statut</th>
+                    <th class="text-center">Date de création</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for compte in Compte_list %}
+                  <tr>
+                    <td>{{ compte.client }}</td>
+                    <td>{{ compte.IBAN }}</td>
+                    <td>{{ compte.solde }} FCFA</td>
+                    {% if compte.is_active %}
+                    <td>Actif</td>
+                    {% else %}
+                    <td>Suspendu</td>
+                    {% endif %}
+                    <td class="text-center">{{ compte.date_creation }}</td>
+                    <td class="text-center">
+                      {% if compte.is_active %}
+                      <a href="{% url 'suspend_account' compte.pk %}" class="btn btn-danger btn-sm">Suspendre</a>
+                      {% else %}
+                      <a href="{% url 'activate_account' compte.pk %}" class="btn btn-success btn-sm">Activer</a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-12">
+        <div class="card card-plain">
+          <div class="card-header">
+            <h4 class="card-title">Liste des clients de la Banque</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table tablesorter">
+                <thead class="text-primary">
+                  <tr>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Numéro de téléphone</th>
+                    <th>Statut</th>
+                    <th class="text-center">Date de naissance</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for client in Client_list %}
+                  <tr>
+                    <td>{{ client.nom }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.contact }}</td>
+                    {% if client.is_active %}
+                    <td>Actif</td>
+                    {% else %}
+                    <td>Suspendu</td>
+                    {% endif %}
+                    <td class="text-center">{{ client.date_naissance }}</td>
+                    <td class="text-center">
+                      {% if client.is_active %}
+                      <a href="{% url 'suspend_client' client.pk %}" class="btn btn-danger btn-sm">Suspendre</a>
+                      {% else %}
+                      <a href="{% url 'activate_client' client.pk %}" class="btn btn-success btn-sm">Activer</a>
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

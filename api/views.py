@@ -9,10 +9,19 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 import base64
 from twilio.rest import Client as TwilioClient
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
+import random
+from rest_framework.decorators import api_view
+import json
+from rest_framework import generics
+
+
 # Create your views here.
 
 TWILIO_ACCOUNT_SID = 'AC0b998a9f24e4e8f6f62211fbd916c518'
-TWILIO_AUTH_TOKEN = '24c08dd2786e8c27467d682563874773'
+TWILIO_AUTH_TOKEN = '00fd42e493029585b707551ba4fd0d9d'
 TWILIO_PHONE_NUMBER = '+13613373177'
 
 class AgentViewSet(viewsets.ModelViewSet):
@@ -26,58 +35,89 @@ class AgenceViewSet(viewsets.ModelViewSet):
 class ClientViewSet(viewsets.ModelViewSet):
     queryset = Client.objects.all()
     serializer_class = ClientSerializer
-
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    
 class CompteViewSet(viewsets.ModelViewSet):
     queryset = Compte.objects.all()
     serializer_class = CompteSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['client']
+    lookup_field = 'client'
+    
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.solde = request.data.get('solde')
+        instance.save()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
+
 
 class Carte_creditViewSet(viewsets.ModelViewSet):
     queryset = Carte_credit.objects.all()
     serializer_class = Carte_creditSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['compte']   
 
 class ChequierViewSet(viewsets.ModelViewSet):
     queryset = Chequier.objects.all()
     serializer_class = ChequierSerializer
 
-class TranscationViewSet(viewsets.ModelViewSet):
-    queryset = Transcation.objects.all()
-    serializer_class = TranscationSerializer
 
 class BeneficiaireViewSet(viewsets.ModelViewSet):
     queryset = Beneficiaire.objects.all()
     serializer_class = BeneficiaireSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['client']   
 
 class VirementViewSet(viewsets.ModelViewSet):
     queryset = Virement.objects.all()
     serializer_class = VirementSerializer
 
-class RechargementViewSet(viewsets.ModelViewSet):
-    queryset = Rechargement.objects.all()
-    serializer_class = RechargementSerializer
+class OperationsViewSet(viewsets.ModelViewSet):
+    queryset = Operations.objects.all()
+    serializer_class = OperationsSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['compte']   
 
 class PayementViewSet(viewsets.ModelViewSet):
     queryset = Payement.objects.all()
     serializer_class = PayementSerializer
 
-class RetraitViewSet(viewsets.ModelViewSet):
-    queryset = Retrait.objects.all()
-    serializer_class = RetraitSerializer
-
-class DemandesViewSet(viewsets.ModelViewSet):
-    queryset = Demandes.objects.all()
-    serializer_class = DemandesSerializer
 
 class Demandes_cartesViewSet(viewsets.ModelViewSet):
     queryset = Demandes_cartes.objects.all()
     serializer_class = Demandes_cartesSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['client']   
 
 class Demandes_chequiersViewSet(viewsets.ModelViewSet):
     queryset = Demandes_chequiers.objects.all()
     serializer_class = Demandes_chequiersSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['client']   
 
 class Demandes_ouvertures_comptesViewSet(viewsets.ModelViewSet):
     queryset = Demandes_ouvertures_comptes.objects.all()
     serializer_class = Demandes_ouvertures_comptesSerializer
+
+class FAQViewSet(viewsets.ModelViewSet):
+    queryset = FAQ.objects.all()
+    serializer_class = FAQSerializer
+
+class ConversationViewSet(viewsets.ModelViewSet):
+    queryset = Conversation.objects.all()
+    serializer_class = ConversationSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['user']
+
+class MessageListCreateAPIView(generics.ListCreateAPIView):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+
+class FCM_TokenViewSet(viewsets.ModelViewSet):
+    queryset = FCM_Token.objects.all()
+    serializer_class = FCM_TokenSerializer
+
 
 class generateKey:
     @staticmethod
@@ -124,7 +164,9 @@ class getPhoneNumberRegistered(APIView):
         keygen = generateKey()
         key = base64.b32encode(keygen.returnValue(phone).encode())  # Generating Key
         OTP = pyotp.HOTP(key)  # HOTP Model
-        if OTP.verify(request.data["otp"], Mobile.counter):  # Verifying the OTP
+        otp = request.GET.get('otp')
+
+        if OTP.verify(otp, Mobile.counter):  # Verifying the OTP
             Mobile.isVerified = True
             Mobile.save()
             return Response("You are authorised", status=200)
@@ -178,3 +220,26 @@ class getPhoneNumberRegistered_TimeBased(APIView):
             Mobile.save()
             return Response("You are authorised", status=200)
         return Response("OTP is wrong/expired", status=400)
+    
+
+class GenerateCreditCardView(APIView):
+    @staticmethod
+    def get():
+        # Generate a random credit card number
+        credit_card_number = ''.join(random.choice('0123456789') for _ in range(16))
+
+        # Generate a random CVV code (3 digits)
+        cvv_code = ''.join(random.choice('0123456789') for _ in range(3))
+
+        # Generate a random expiry date (between 01/2023 and 12/2030)
+        expiry_month = random.randint(1, 12)
+        expiry_year = random.randint(2023, 2030)
+
+        # Construct the JSON response
+        response_data = {
+            'credit_card_number': credit_card_number,
+            'cvv_code': cvv_code,
+            'expiry_date': f'{expiry_month:02d}/{expiry_year}'
+        }
+
+        return Response(response_data)

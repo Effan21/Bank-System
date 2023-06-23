@@ -1,0 +1,64 @@
+<div class="sidebar">
+    <!-- Tip 1: You can change the color of the sidebar using: data-color="blue | green | orange | red" -->
+    <div class="sidebar-wrapper">
+      <div class="logo">
+        <a href="javascript:void(0)" class="simple-text logo-mini">
+          MAX
+        </a>
+        <a href="javascript:void(0)" class="simple-text logo-normal">
+          BANK
+        </a>
+      </div>
+      <ul class="nav">
+        <li class="{% if 'index' in segment %} active {% endif %}">
+          <a href="{% url 'home'%}">
+            <i class="tim-icons icon-chart-pie-36"></i>
+            <p>Dashboard</p>
+          </a>
+        </li>
+        <li class="{% if 'comptes' in segment %} active {% endif %}">
+          <a href="{% url 'comptes'%}">
+            <i class="tim-icons icon-bullet-list-67"></i>
+            <p>Comptes</p>
+          </a>
+        </li>
+        <li class="{% if 'demandes_ouverture' in segment %} active {% endif %}">
+          <a href="{% url 'demandes_ouverture'%}">
+            <i class="tim-icons icon-single-copy-04"></i>
+            <p>Demandes d'ouvertures</p>
+          </a>
+        </li>
+        <li class="{% if 'demandes_client' in segment %} active {% endif %}">
+          <a href="{% url 'demandes_client'%}">
+            <i class="tim-icons icon-single-02"></i>
+            <p>Demandes</p>
+          </a>
+        </li>
+        <li class="{% if 'cartes' in segment %} active {% endif %}">
+          <a href="{% url 'cartes'%}">
+            <i class="tim-icons icon-credit-card"></i>
+            <p>Cartes de crédit</p>
+          </a>
+        </li>
+        <li class="{% if 'faqs' in segment %} active {% endif %}">
+          <a href="{% url 'faqs'%}">
+            <i class="tim-icons icon-alert-circle-exc"></i>
+            <p>FAQs</p>
+          </a>
+        </li>
+        <li class="{% if 'conversations' in segment %} active {% endif %}">
+          <a href="{% url 'conversations'%}">
+            <i class="tim-icons icon-chat-33"></i>
+            <p>Conversations</p>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'login' %}">
+            <i class="tim-icons icon-button-power"></i>
+            <p>Logout</p>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  

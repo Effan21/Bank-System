@@ -31,10 +31,6 @@ class ChequierSerializer(serializers.ModelSerializer):
         model = Chequier
         fields = '__all__'
 
-class TranscationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Transcation
-        fields = '__all__'
 
 class BeneficiaireSerializer(serializers.ModelSerializer):
     class Meta:
@@ -46,9 +42,9 @@ class VirementSerializer(serializers.ModelSerializer):
         model = Virement
         fields = '__all__'
 
-class RechargementSerializer(serializers.ModelSerializer):
+class OperationsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Rechargement
+        model = Operations
         fields = '__all__'
 
 class PayementSerializer(serializers.ModelSerializer):
@@ -56,15 +52,6 @@ class PayementSerializer(serializers.ModelSerializer):
         model = Payement
         fields = '__all__'
 
-class RetraitSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Retrait
-        fields = '__all__'
-
-class DemandesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Demandes
-        fields = '__all__'
 
 class Demandes_cartesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -81,3 +68,25 @@ class Demandes_ouvertures_comptesSerializer(serializers.ModelSerializer):
         model = Demandes_ouvertures_comptes
         fields = '__all__'
 
+class FAQSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FAQ
+        fields = '__all__'
+
+class MessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Message
+        fields = '__all__'
+
+class ConversationSerializer(serializers.ModelSerializer):
+    messages = MessageSerializer(many=True, read_only=True)
+
+    
+    class Meta:
+        model = Conversation
+        fields = '__all__'
+
+class FCM_TokenSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FCM_Token
+        fields = '__all__'

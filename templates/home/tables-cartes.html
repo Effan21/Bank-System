@@ -1,0 +1,95 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}Cartes et chéquiers{% endblock %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Cartes de crédits</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table tablesorter">
+                <thead class="text-primary">
+                  <tr>
+                    <th>Compte</th>
+                    <th>Type</th>
+                    <th>Numero</th>
+                    <th class="text-center">Date Expiration</th>
+                    <th class="text-center">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for cartes in Carte_credit_list %}
+                  <tr>
+                    <td>{{ cartes.compte }}</td>
+                    <td>{{ cartes.type }}</td>
+                    <td>{{ cartes.numero }}</td>
+                    <td class="text-center">{{ cartes.date_expiration }}</td>
+                    <td>
+                    {% if cartes.is_active%}
+                    <p><i class="fas fa-check-circle text-success"></i> Actif</p>
+                    {% else %}
+                    <p><i class="fas fa-times-circle text-danger"></i> Suspendu</p>
+                    {% endif %} 
+                    </td>
+                    <td class="text-center">{{ cartes.date_creation }}</td>  
+                
+                    {% if cartes.is_active %}
+                    <td class="text-center">
+                      <a href="{% url 'suspend_carte' cartes.pk  %}" class="btn btn-danger btn-sm">Suspendre</a>
+                    </td>
+                    {% else %}
+                    <td class="text-center">
+                      <a href="{% url 'activate_carte' cartes.pk  %}" class="btn btn-success btn-sm">Activer</a>
+                  </tr>
+                    {% endif %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-12">
+        <div class="card card-plain">
+          <div class="card-header">
+            <h4 class="card-title">Chéquiers</h4>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table tablesorter">
+                <thead class="text-primary">
+                  <tr>
+                    <th>Compte</th>
+                    <th>Nombre page</th>
+                    <th>Date Expiration</th>                   
+                    <th class="text-center">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for chequiers in Chequier_list %}
+                  <tr>
+                    <td>{{ chequiers.compte }}</td>
+                    <td>{{ chequiers.date_expiration }}</td>
+                    <td>{{ chequiers.num_page}}</td>
+                    <td class="text-center">{{ chequiers.date_creation }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}

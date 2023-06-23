@@ -1,0 +1,81 @@
+{% extends "layouts/base.html" %}
+
+{% block title %} Demande Details {% endblock %}
+
+{% block stylesheets %}
+  <!-- Include any additional CSS files for styling -->
+{% endblock stylesheets %}
+
+{% block content %}
+
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">Demande d'ouverture de compte {{ demandes.nom }}</h4>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-6">
+                <h5>Nom:</h5>
+                <p>{{ demandes.nom }}</p>
+
+                <h5>Email:</h5>
+                <p>{{ demandes.email }}</p>
+
+                <h5>Contact:</h5>
+                <p>{{ demandes.contact }}</p>
+
+                <h5>Date de Naissance:</h5>
+                <p>{{ demandes.date_naissance }}</p>
+
+                <h5>Adresse:</h5>
+                <p>{{ demandes.adresse }}</p>
+              </div>
+              <div class="col-md-6">
+                <h5>Date:</h5>
+                <p>{{ demandes.date }}</p>
+
+                <h5>Status:</h5>
+                {% if demandes.status == 'Approuvée' %}
+                  <p><i class="fas fa-check-circle text-success"></i> Acceptée</p>
+                {% elif demandes.status == 'Rejetée' %}
+                  <p><i class="fas fa-times-circle text-danger"></i> Refusée</p>
+                {% else %}
+                  <p><i class="fas fa-info-circle text-info"></i> En attente</p>
+                {% endif %}
+
+                <h5>Document Picture:</h5>
+                <a href="http://127.0.0.1:8000/{{ demandes.document_pic }}">http://127.0.0.1:8000/{{ demandes.document_pic }}</a>
+
+                <h5>Photo:</h5>
+                <a href="http://127.0.0.1:8000/{{ demandes.photo }}">http://127.0.0.1:8000/{{ demandes.photo }}</a>
+
+                <h5>Signature Picture:</h5>
+                <a href="http://127.0.0.1:8000/{{ demandes.signature_pic }}">http://127.0.0.1:8000/{{ demandes.signature_pic }}</a>
+              </div>
+            </div>
+          </div>
+          {% if demandes.status == 'en_attente' %}
+          <div class="card-footer">
+            <form action="{% url 'accept_demande' demandes.id %}" method="post" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success">Accepter</button>
+            </form>
+            <form action="{% url 'refuse_demande' demandes.id %}" method="post" style="display: inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Refuser</button>
+            </form>
+          </div>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock content %}
+
+{% block javascripts %}
+  <!-- Include any additional JavaScript files if needed -->
+{% endblock javascripts %}

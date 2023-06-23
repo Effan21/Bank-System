@@ -1,0 +1,50 @@
+{% extends "layouts/base.html" %}
+
+{% block title %}FAQS {% endblock %}
+
+{% block stylesheets %}{% endblock stylesheets %}
+
+{% block content %}
+  <div class="content">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h4 class="card-title">FAQS</h4>
+          </div>
+          <div class="card-body">
+            <div class="col-md-11 text-right"><a href="{% url 'add_faq' %}" class="btn btn-info btn-sm ">Ajouter</a></div>
+            
+            <div class="table-responsive">
+              <table class="table tablesorter">
+                <thead class="text-primary">
+                  <tr>
+                    <th class="text-center">Question</th>
+                    <th class="text-center">Réponse</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for faq in faqs_list %}
+                  <tr>
+                    <td>{{ faq.question }}</td>
+                    <td>{{ faq.answer }}</td>
+                    <td class"text-center">
+                      <div class="btn-group">
+                      <a href="{% url 'edit_faq' faq.pk  %}" class="btn btn-success btn-sm">Modifier</a>
+                      <a href="{% url 'delete_faq' faq.pk  %}" class="btn btn-danger btn-sm">Supprimer</a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block javascripts %}{% endblock javascripts %}
